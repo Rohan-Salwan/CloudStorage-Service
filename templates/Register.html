@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+  <div class="container">
+    <div class="title">Registration</div>
+    <div class="content">
+      <form action="Register" method="POST">
+        {% csrf_token %}
+        <div class="user-details">
+          <div class="input-box">
+            <span class="details">FirstName</span>
+            <input type="text" placeholder="FirstName" name="FirstName"required>
+          </div>
+          <div class="input-box">
+            <span class="details">LastName</span>
+            <input type="text" placeholder="LastName" name="LastName" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Username</span>
+            <input type="text" placeholder="Username" name="Username" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Email</span>
+            <input type="text" placeholder="Email" name="Email" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Contact</span>
+            <input type="text" placeholder="Contact" name="Contact" required>
+          </div>
+          <div class="input-box">
+            <span class="details">DOB</span>
+            <input type="text" placeholder="DOB" name="DOB" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Password</span>
+            <input type="text" placeholder="Password" name="Password" required>
+          </div>
+        </div>
+        <div class="button">
+          <input type="submit" value="Register">
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

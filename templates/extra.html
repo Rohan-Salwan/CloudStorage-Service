@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>First Time</h1>
+<p>Basic Forum</p>
+
+<form action='LOGIN' method= 'POST'>
+    {% csrf_token %}
+    <input type="text" id="username" name="username"><br><br>
+    <input type="password"name="pwdd"><br><br>
+    <input type="submit" name="SUBMIT">
+</form>
+</body>
+</html>
