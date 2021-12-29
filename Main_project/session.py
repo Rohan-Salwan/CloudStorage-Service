@@ -23,12 +23,6 @@ class Db:
         self.pointer.execute(add_user, User_Info)
         self.conn.commit()
     
-    def display(self):
-        self.pointer.execute("select * from session")
-        for content in self.pointer:
-            lol=json.loads(content[1])
-            print(lol,type(lol))
-    
     def SessionId_Generator(self):
         try:
             id=random.randint(1,1000000000)
