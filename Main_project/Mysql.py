@@ -3,11 +3,11 @@ from mysql.connector import Error
 
 
 class Db:
-    def connect(self):
+    def connect(self,db):
         """ Connect to MySQL database """
         self.conn = None
         try:
-            self.conn = mysql.connector.connect(host='127.0.0.1',database='rohan1',user='rohan',password='Lollol786',auth_plugin='mysql_native_password',port=9999)
+            self.conn = mysql.connector.connect(host='127.0.0.1', database=db, user='rohan', password='Lollol786', auth_plugin='mysql_native_password', port=9999)
             self.pointer = self.conn.cursor()
             if self.conn.is_connected():
                 print('Connected to MySQL database')
@@ -64,12 +64,3 @@ class Db:
         for user in self.pointer:
             credentials.append(user)
         return credentials  
-
-
-
-#lol=['mal', 'ew', 'ewsalwan23','ewsalwan23@gmail.com', False, 367556753, '1998', 'Lollol786']
-Db.connect(Db)
-#Db.create_user(Db,lol)
-#Db.add(Db,'scump', 'jumper', 'jumpersalwan23','vishusalwan23@gmail.com', False, 33254353, '1998', 'poppy786')
-#Db.logout(Db,'vishusalwan23@gmail.com')
-#Db.display(Db)

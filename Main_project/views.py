@@ -1,31 +1,32 @@
 from django.http import request, response
 from django.shortcuts import render, resolve_url
-from . import sql
+from . import Mysql
+from . import Fn 
 # Create your views here.
 
 def Home(request):
-    return render(request,"Home.html")
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        Verified = Fn.Verify_Session(sessionid)
+        if Verified:
+            return render(request,"Home.html")
+    return render(request, "Login.html")
 
 def Login(request):
     if request.method=='POST':
-        email=request.POST['Email']
-        password=request.POST['Password']
-        sql.Db.connect(sql.Db)
-        sql.Db.login(sql.Db,email,password)
-        return render(request, "Login_Sucessful.html")
+        Email=request.POST['Email']
+        Password=request.POST['Password']
+        Fn.Connection_Establishment(Email,Password)
+        Response, SessionId = Fn.Assign_SessionId(request) 
+        Fn.Generate_Session(SessionId)
+        return Response
     else:
         return render(request, "Login.html")
 
 def Register(request):
     if request.method=='POST':
-        User_Info_fields = ['FirstName', 'LastName', 'Username', 'Email', 'Contact', 'DOB', 'Password']
-        User_Info = []
-        for field in User_Info_fields:
-            if field=='Contact':
-                User_Info.append(False)
-            User_Info.append(request.POST[field])
-        sql.Db.connect(sql.Db)
-        sql.Db.create_user(sql.Db,User_Info)
+        User_Info = Fn.Get_UserFieldValues(request)
+        Fn.Create_User(User_Info)
         return render(request, "Register_Sucessfully.html")
     else:
         return render(request, "Register.html")
@@ -33,8 +34,10 @@ def Register(request):
 def Logout(request):
     if request.method == 'POST':
         email = request.POST['Email']
-        sql.Db.connect(sql.Db)
-        sql.Db.logout(sql.Db,email)
+        Mysql.Db.connect(Mysql.Db,'rohan1')
+        Mysql.Db.logout(Mysql.Db,email)
         return render(request,'Logout_Sucessfull.html')
     else:
         return render(request,'Logout.html')
+
+     
