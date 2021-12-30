@@ -55,4 +55,10 @@ def SessionExpire_Checker(User_Session):
     if date==User_Session['Date']:
         return True
     else:
+        sessionid = User_Session['session_id']
+        delete_session(sessionid)
         return False
+
+def delete_session(session_id):
+    session.Db.connect(session.Db,'rohan1')
+    session.Db.Delete_Session(session.Db,session_id)

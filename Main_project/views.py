@@ -1,7 +1,7 @@
 from django.http import request, response
 from django.shortcuts import render, resolve_url
 from . import Mysql
-from . import Fn 
+from . import Fn
 # Create your views here.
 
 def Home(request):
@@ -36,6 +36,8 @@ def Logout(request):
         email = request.POST['Email']
         Mysql.Db.connect(Mysql.Db,'rohan1')
         Mysql.Db.logout(Mysql.Db,email)
+        sessionid = request.COOKIES('id')
+        Fn.delete_session(sessionid)
         return render(request,'Logout_Sucessfull.html')
     else:
         return render(request,'Logout.html')

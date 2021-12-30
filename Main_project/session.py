@@ -39,6 +39,13 @@ class Db:
         except Exception as e:
             return "Invalid Query" 
     
+    def Delete_Session(self,session_id):
+        query=f"delete from session where session_id = {session_id}"
+        try:
+            self.pointer.execute(query)
+        except Exception as e:
+            return "Invalid Query"
+
     def TimeDateSetter_And_Serialization(self,List):
         Local_Time=datetime.now()
         Login_Time=Local_Time.strftime("%H:%M:%S")
