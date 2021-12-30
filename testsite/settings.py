@@ -76,9 +76,8 @@ WSGI_APPLICATION = 'testsite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo', #'django.db.backends.sqlite3',
-        'NAME': 'blogs', #BASE_DIR / 'db.sqlite3',
-        'USER': 'root'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '',
     }
 }
 

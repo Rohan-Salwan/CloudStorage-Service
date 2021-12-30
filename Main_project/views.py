@@ -1,6 +1,6 @@
 from django.http import request, response
 from django.shortcuts import render, resolve_url
-from . import Mysql
+from . import User
 from . import Fn
 # Create your views here.
 
@@ -34,8 +34,8 @@ def Register(request):
 def Logout(request):
     if request.method == 'POST':
         email = request.POST['Email']
-        Mysql.Db.connect(Mysql.Db,'rohan1')
-        Mysql.Db.logout(Mysql.Db,email)
+        User.Db.connect(User.Db,'rohan1')
+        User.Db.logout(User.Db,email)
         sessionid = request.COOKIES('id')
         Fn.delete_session(sessionid)
         return render(request,'Logout_Sucessfull.html')

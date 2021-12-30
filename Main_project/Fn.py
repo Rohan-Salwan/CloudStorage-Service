@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . import Mysql
+from . import User
 from . import session
 import json
 import time
@@ -15,8 +15,8 @@ def Get_UserFieldValues(request):
     return User_Info
 
 def Create_User(User_Info):
-    Mysql.Db.connect(Mysql.Db,'rohan1')
-    Mysql.Db.create_user(Mysql.Db,User_Info)
+    User.Db.connect(User.Db,'rohan1')
+    User.Db.create_user(User.Db,User_Info)
 
 def Assign_SessionId(User_Request):
     SessionId = session.Db.SessionId_Generator(session.Db)
@@ -29,8 +29,8 @@ def Generate_Session(ID):
     session.Db.Session_Generator(session.Db,[ID, {}])
 
 def Connection_Establishment(email,password):
-    Mysql.Db.connect(Mysql.Db,'rohan1')
-    Mysql.Db.login(Mysql.Db,email,password)
+    User.Db.connect(User.Db,'rohan1')
+    User.Db.login(User.Db,email,password)
 
 def Verify_Session(SessionId):
     User_Session = Get_DeserializedSession(SessionId)
