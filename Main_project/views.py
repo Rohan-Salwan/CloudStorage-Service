@@ -34,7 +34,7 @@ def Register(request):
 def Logout(request):
     if request.method == 'POST':
         email = request.POST['Email']
-        User.Db.connect(User.Db,'rohan1')
+        User.Db.connect(User.Db)
         User.Db.logout(User.Db,email)
         sessionid = request.COOKIES('id')
         Fn.delete_session(sessionid)

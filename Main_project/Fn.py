@@ -15,7 +15,7 @@ def Get_UserFieldValues(request):
     return User_Info
 
 def Create_User(User_Info):
-    User.Db.connect(User.Db,'rohan1')
+    User.Db.connect(User.Db)
     User.Db.create_user(User.Db,User_Info)
 
 def Assign_SessionId(User_Request):
@@ -25,11 +25,11 @@ def Assign_SessionId(User_Request):
     return Response, SessionId
 
 def Generate_Session(ID):
-    session.Db.connect(session.Db,'rohan1')
+    session.Db.connect(session.Db)
     session.Db.Session_Generator(session.Db,[ID, {}])
 
 def Connection_Establishment(email,password):
-    User.Db.connect(User.Db,'rohan1')
+    User.Db.connect(User.Db)
     User.Db.login(User.Db,email,password)
 
 def Verify_Session(SessionId):
@@ -42,7 +42,7 @@ def Verify_Session(SessionId):
 
 def Get_DeserializedSession(SessionId):
     try:
-        session.Db.connect(session.Db, 'rohan1')
+        session.Db.connect(session.Db)
         UserSessionInfo_List = session.Db.Query(session.Db,SessionId)
         User_Session = UserSessionInfo_List[1]
         Deserialized_UserSession = json.loads(User_Session)
@@ -60,5 +60,5 @@ def SessionExpire_Checker(User_Session):
         return False
 
 def delete_session(session_id):
-    session.Db.connect(session.Db,'rohan1')
+    session.Db.connect(session.Db)
     session.Db.Delete_Session(session.Db,session_id)

@@ -6,11 +6,11 @@ import time
 import json
 
 class Db:
-    def connect(self,db):
+    def connect(self):
         """ Connect to MySQL database """
         self.conn = None
         try:
-            self.conn = mysql.connector.connect(host='127.0.0.1', database=db, user='rohan', password='Lollol786', auth_plugin='mysql_native_password', port=9999)
+            self.conn = mysql.connector.connect(host='rohan1.clcyfsk0gweh.us-east-1.rds.amazonaws.com', database='UserInfoDatabase', user='djangoDb', password='Lollol786+', auth_plugin='mysql_native_password', port=3306)
             self.pointer = self.conn.cursor()
             if self.conn.is_connected():
                 print('Connected to MySQL database')

@@ -3,26 +3,22 @@ from mysql.connector import Error
 
 
 class Db:
-    def connect(self,db):
+    def connect(self):
         """ Connect to MySQL database """
         self.conn = None
         try:
-            self.conn = mysql.connector.connect(host='127.0.0.1', database=db, user='rohan', password='Lollol786', auth_plugin='mysql_native_password', port=9999)
+            self.conn = mysql.connector.connect(host='rohan1.clcyfsk0gweh.us-east-1.rds.amazonaws.com', database='UserInfoDatabase', user='djangoDb', password='Lollol786+', auth_plugin='mysql_native_password', port=3306)
             self.pointer = self.conn.cursor()
             if self.conn.is_connected():
                 print('Connected to MySQL database')
         except Error as e:
             print(e)
-    
+
     def create_user(self, User_Info):
-        add_user = ("INSERT INTO proxect(firstname, lastname, username, email, login, cell, DOB, password)VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
+        self.connect(self)
+        add_user = ("INSERT INTO UserInfo(firstname, lastname, username, email, login, cell, DOB, password)VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
         self.pointer.execute(add_user, User_Info)
         self.conn.commit()
-    
-    def display(self):
-        self.pointer.execute("select * from proxect")
-        for content in self.pointer:
-            print(content)
 
     def login(self,mail,password):
         result=self.Query(self,mail)
@@ -44,18 +40,16 @@ class Db:
         except Exception as e:
             print(e)
 
-    
     def Helper_For_LoginAndLogout(self,email,command):
         try:
-            query=f"update proxect set login = {command} where email = '{email}'"
+            query=f"update UserInfo set login = {command} where email = '{email}'"
             self.pointer.execute(query)
             self.conn.commit()
         except Exception as e:
             print("problem with database")    
-    
-    
+
     def Query(self,email):
-        query = f"select * from proxect where email='{email}'"
+        query = f"select * from UserInfo where email='{email}'"
         credentials=[]
         try:
             self.pointer.execute(query)
@@ -63,4 +57,4 @@ class Db:
             return "Invalid Query"
         for user in self.pointer:
             credentials.append(user)
-        return credentials  
+        return credentials
