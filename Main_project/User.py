@@ -15,7 +15,6 @@ class Db:
             print(e)
 
     def create_user(self, User_Info):
-        self.connect(self)
         add_user = ("INSERT INTO UserInfo(firstname, lastname, username, email, login, cell, DOB, password)VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
         self.pointer.execute(add_user, User_Info)
         self.conn.commit()
