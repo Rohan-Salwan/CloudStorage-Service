@@ -7,19 +7,36 @@ from . import Fn
 def Home(request):
     if 'id' in request.COOKIES:
         sessionid = request.COOKIES['id']
-        Verified = Fn.Verify_Session(sessionid)
-        if Verified:
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        if Verified and User_Session:
             return render(request,"Home.html")
     return render(request, "Login.html")
 
+def Videos(request):
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.VideoRequest_Handler(request,Verified,User_Session,sessionid)
+    else:
+        return render(request,"Login.html")
+
 def Login(request):
     if request.method=='POST':
-        Email=request.POST['Email']
-        Password=request.POST['Password']
-        Fn.Connection_Establishment(Email,Password)
-        Response, SessionId = Fn.Assign_SessionId(request) 
-        Fn.Generate_Session(SessionId)
-        return Response
+        if 'id' not in request.COOKIES:
+            Email=request.POST['Email']
+            Password=request.POST['Password']
+            return Fn.Connection_Establishment(Email,Password,request)
+        else:
+            sessionid = request.COOKIES['id']
+            Verified, User_Session = Fn.Verify_Session(sessionid)
+            if Verified and User_Session:
+                if 'User_Profile' in User_Session:
+                    User_Profile=User_Session['User_Profile']
+                    return render(request, 'profile.html',{'User_Details':User_Profile})
+                else:
+                    return Fn.Get_UserProfile(request,User_Session,sessionid)
+            else:
+                return render(request, "Login.html")
     else:
         return render(request, "Login.html")
 
@@ -32,14 +49,11 @@ def Register(request):
         return render(request, "Register.html")
 
 def Logout(request):
-    if request.method == 'POST':
-        email = request.POST['Email']
-        User.Db.connect(User.Db)
-        User.Db.logout(User.Db,email)
-        sessionid = request.COOKIES('id')
+    try:
+        sessionid = request.COOKIES['id']
         Fn.delete_session(sessionid)
         return render(request,'Logout_Sucessfull.html')
-    else:
-        return render(request,'Logout.html')
+    except:
+        return render(request, 'Login.html')
 
      
