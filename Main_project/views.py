@@ -12,7 +12,35 @@ def Home(request):
             return render(request,"Home.html")
     return render(request, "Login.html")
 
-def Videos(request):
+def AddVideo(request):
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        Description=request.POST['description']
+        VideoLink=request.POST['VideoLink']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.UploadVideoRequest_Handler(request, Verified, User_Session, sessionid, Description, VideoLink)
+    else:
+        return render(request, "Login.html")
+
+def AddImage(request):
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        VideoLink=request.POST['ImageLink']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.UploadImageRequest_Handler(request, Verified, User_Session, sessionid, VideoLink)
+    else:
+        return render(request,"Login.html")
+
+
+def Get_AllImages(request):
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.ImageRequest_Handler(request, Verified, User_Session, sessionid)
+    else:
+        return render(request, "Login.html")
+
+def Get_AllVideos(request):
     if 'id' in request.COOKIES:
         sessionid = request.COOKIES['id']
         Verified, User_Session = Fn.Verify_Session(sessionid)
@@ -29,14 +57,7 @@ def Login(request):
         else:
             sessionid = request.COOKIES['id']
             Verified, User_Session = Fn.Verify_Session(sessionid)
-            if Verified and User_Session:
-                if 'User_Profile' in User_Session:
-                    User_Profile=User_Session['User_Profile']
-                    return render(request, 'profile.html',{'User_Details':User_Profile})
-                else:
-                    return Fn.Get_UserProfile(request,User_Session,sessionid)
-            else:
-                return render(request, "Login.html")
+            return Fn.ProflieRequest_Handler(request, Verified, User_Session, sessionid)
     else:
         return render(request, "Login.html")
 
@@ -55,5 +76,3 @@ def Logout(request):
         return render(request,'Logout_Sucessfull.html')
     except:
         return render(request, 'Login.html')
-
-     

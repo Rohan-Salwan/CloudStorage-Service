@@ -43,7 +43,7 @@ class Db:
             for user in self.pointer:
                 return user
         except Exception as e:
-            return "Invalid Query" 
+            return "Invalid Query"
     
     def Delete_Session(self,id):
         query=f"delete from session where session_id = '{id}'"
