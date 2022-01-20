@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 import mysql.connector
 from mysql.connector import Error
 
@@ -15,7 +16,7 @@ class Db:
             print(e)
 
     def create_user(self, User_Info):
-        add_user = ("INSERT INTO UserInfo(firstname, lastname, username, email, cell, DOB, password)VALUES (%s, %s, %s, %s, %s, %s, %s)")
+        add_user = ("INSERT INTO proxect(firstname, lastname, username, email, cell, DOB, password)VALUES (%s, %s, %s, %s, %s, %s, %s)")
         self.pointer.execute(add_user, User_Info)
         self.conn.commit()
 
@@ -36,6 +37,6 @@ class Db:
         try:
             self.pointer.execute(query)
         except Exception as e:
-            return "Invalid Query"
+            print('Invalid Query')
         for user in self.pointer:
             return user

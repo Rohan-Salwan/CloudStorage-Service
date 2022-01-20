@@ -5,78 +5,85 @@ from . import User
 from . import session
 import json
 import time
-import Media
+from . import Media
 from datetime import datetime
 
 Server_Cache=cache.Cache()
 
 User_Info_fields = ['FirstName', 'LastName', 'Username', 'Email', 'Contact', 'DOB', 'Password']
 
-def UploadVideoRequest_Handler(request,Verified,User_Session,sessionid,desc,Videolink):
+def UploadVideoRequest_Handler(request,Verified,User_Session,desc,Videolink):
     if Verified and User_Session:
-        User_Session['User_Videos'][desc]=Videolink
-        User_DesirializedVideosDict = User_Session['User_Videos']
-        User_Email=User_Session['email']
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        User_Dict['User_Videos'][desc]=Videolink
+        User_DesirializedVideosDict = User_Dict['User_Videos']
         Media.Db.connect(Media.Db)
         Media.Db.Upload_Video(Media.Db,User_Email, User_DesirializedVideosDict)
-        Server_Cache.get(sessionid,Update_Node=User_Session)
-        return render(request, 'Videos.html', {'User_Videos': User_DesirializedVideosDict})
+        Server_Cache.get(User_Email,Update_Node=User_Dict)
+        return render(request, 'UplaodVideos.html', {'User_Videos': User_DesirializedVideosDict})
     else:
         return render(request, "Login.html")
 
-def UploadImageRequest_Handler(request,Verified,User_Session,sessionid, ImageLink):
+def UploadImageRequest_Handler(request,Verified,User_Session,ImageLink):
     if Verified and User_Session:
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
         ImageUploaded_Time=datetime.now()
         Uploaded_Time=ImageUploaded_Time.strftime("%H:%M:%S")
-        User_Session['User_Images'][ImageLink]=Uploaded_Time
-        User_DesirializedImagesDict=User_Session['User_Images']
-        User_Email=User_Session['email']
+        User_Dict['User_Images'][ImageLink]=Uploaded_Time
+        User_DesirializedImagesDict=User_Dict['User_Images']
         Media.Db.connect(Media.Db)
         Media.Db.Upload_Image(Media.Db, User_Email, User_DesirializedImagesDict)
-        Server_Cache.get(sessionid,Update_Node=User_Session)
-        return render(request, 'Images.html', {'User_Images': User_DesirializedImagesDict})
+        Server_Cache.get(User_Email,Update_Node=User_Dict)
+        return render(request, 'UploadImages.html', {'User_Images': User_DesirializedImagesDict})
     else:
         return render(request, "Login.html")
 
-def VideoRequest_Handler(request,Verified,User_Session,sessionid):
+def VideoRequest_Handler(request,Verified,User_Session):
     if Verified and User_Session:
-        if 'User_Videos' in User_Session:
-            User_DesirializedVideosDict=User_Session['User_Videos']
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        if 'User_Videos' in User_Dict:
+            User_DesirializedVideosDict=User_Dict['User_Videos']
             return render(request, 'Videos.html', {'User_Videos': User_DesirializedVideosDict})
         else:
-            UserEmail=User_Session['email']
-            User_VideoQueryResult=Media.Db.Query(Media.Db,UserEmail)
-            User_SerializedVideosDict=User_VideoQueryResult[0]
+            User_VideoQueryResult=Media.Db.Query(Media.Db,User_Email)
+            User_SerializedVideosDict=User_VideoQueryResult[1]
             User_DesirializedVideosDict=json.loads(User_SerializedVideosDict)
-            User_Session['User_Videos']=User_DesirializedVideosDict
-            Server_Cache.get(sessionid,Update_Node=User_Session)
+            User_Dict['User_Videos']=User_DesirializedVideosDict
+            Server_Cache.get(User_Email,Update_Node=User_Dict)
             return render(request,'Videos.html', {'User_Videos': User_DesirializedVideosDict})
     else:
         return render(request, 'Login.html')
 
-def ImageRequest_Handler(request, Verified, User_Session, sessionid):
+def ImageRequest_Handler(request, Verified, User_Session):
     if Verified and User_Session:
-        if 'User_Images' in User_Session:
-            User_DeserializedImagesDict=User_Session['User_Images']
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        if 'User_Images' in User_Dict:
+            User_DeserializedImagesDict=User_Dict['User_Images']
             return render(request, 'Images.html', {'User_Images': User_DeserializedImagesDict})
         else:
-            UserEmail=User_Session['email']
-            User_ImageQueryResult=Media.Db.Query(Media.Db,UserEmail)
-            User_SerializedImagesDict=User_ImageQueryResult[1]
+            User_ImageQueryResult=Media.Db.Query(Media.Db,User_Email)
+            User_SerializedImagesDict=User_ImageQueryResult[2]
             User_DeserializedImagesDict=json.loads(User_SerializedImagesDict)
-            User_Session['User_Images']=User_DeserializedImagesDict
-            Server_Cache.get(sessionid,Update_Node=User_Session)
+            User_Dict['User_Images']=User_DeserializedImagesDict
+            Server_Cache.get(User_Email,Update_Node=User_Dict)
             return render(request,'Images.html', {'User_Images': User_DeserializedImagesDict})
     else:
         return render(request, 'Login.html')
 
 def ProflieRequest_Handler(request,Verified,User_Session,sessionid):
     if Verified and User_Session:
-        if 'User_Profile' in User_Session:
-            User_Profile=User_Session['User_Profile']
-            return render(request, 'profile.html',{'User_Details':User_Profile})
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        if 'User_Profile' in User_Dict:
+            User_Profile=User_Dict['User_Profile']
+            User_Details=zip(User_Profile[0],User_Profile[1])
+            return render(request, 'profile.html',{'User_Details':User_Details})
         else:
-            return Get_UserProfile(request,User_Session,sessionid)
+            return Get_UserProfile(request,User_Session,sessionid,User_Email)
     else:
         return render(request, "Login.html")
 
@@ -94,29 +101,33 @@ def Create_User(User_Info):
 
 def Generate_Session(ID,email):
     session.Db.connect(session.Db)
-    session.Db.Session_Generator(session.Db,email,[ID, {}])
+    User_Session=session.Db.Session_Generator(session.Db,email,[ID, {}])
+    if email not in Server_Cache.Map:
+        Server_Cache.Put(email,{})
+    return User_Session
 
 def Connection_Establishment(email,password,request):
     User.Db.connect(User.Db)
     User_Details=User.Db.login(User.Db,email,password)
     SessionId = session.Db.SessionId_Generator(session.Db)
     User_Session=Generate_Session(SessionId,email)
-    Response=UserProfileResponse(request,User_Session,SessionId,User_Details)
+    Response=UserProfileResponse(request,User_Session,SessionId,User_Details,email)
     Response.set_cookie('id', SessionId)
     return Response
 
-def UserProfileResponse(request,User_Session,SessionId,User_Details):
-    User_Profile=zip(User_Info_fields,User_Details)
-    Response=render(request,'profile.html',{'User_Details': User_Profile})
-    User_Session['User_Profile']=User_Profile
+def UserProfileResponse(request,User_Session,SessionId,User_Details,email):
+    Details=zip(User_Info_fields,User_Details)
+    Response=render(request,'profile.html',{'User_Details': Details})
+    UserInfoDict=Server_Cache.get(email)
     Server_Cache.Put(SessionId,User_Session)
+    UserInfoDict['User_Profile']=[User_Info_fields,User_Details]
+    Server_Cache.get(email,Update_Node=UserInfoDict)
     return Response
 
-def Get_UserProfile(request, User_Session,sessionid):
-    User_Email=User_Session['email']
+def Get_UserProfile(request, User_Session,sessionid,User_Email):
     User.Db.connect(User.Db)
     User_Details=User.Db.Query(User.Db, User_Email)
-    return UserProfileResponse(request,User_Session,sessionid,User_Details)
+    return UserProfileResponse(request,User_Session,sessionid,User_Details,User_Email)
 
 def Verify_Session(SessionId):
     User_Session = Get_DeserializedSession(SessionId)
@@ -138,7 +149,7 @@ def Get_DeserializedSession(SessionId):
             Deserialized_UserSession = Server_Cache.get(SessionId)
         return Deserialized_UserSession
     except Exception as e:
-        return None
+        print(e)
 
 def SessionExpire_Checker(User_Session):
     date=time.strftime("%d %b %Y ")

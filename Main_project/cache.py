@@ -19,7 +19,7 @@ class Cache:
             self.tail=node
             self.count+=1
         else:
-            if self.count==10:
+            if self.count==100:
                 # condition for page fault.
                 # evicting least recent usage page(LRU) and adding most recent page.
                 key=self.head.key

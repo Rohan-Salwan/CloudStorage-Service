@@ -15,10 +15,11 @@ class Db:
             print(e)
 
     def InitializeUserTraceInMedia(self,email):
+        self.connect(self)
         SerializedDict=json.dumps({})
         User_Info=[email,SerializedDict,SerializedDict]
-        UserInfo=("INSERT INTO media(email, Videos, Images)VALUES (%s, %s, %s)")
-        self.pointer.execute(UserInfo,User_Info)
+        UserQuery=("INSERT INTO media(email, Videos, Images)VALUES (%s, %s, %s)")
+        self.pointer.execute(UserQuery,User_Info)
         self.conn.commit()
         
     def Upload_Video(self,email,VideosDict):

@@ -18,7 +18,7 @@ def AddVideo(request):
         Description=request.POST['description']
         VideoLink=request.POST['VideoLink']
         Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.UploadVideoRequest_Handler(request, Verified, User_Session, sessionid, Description, VideoLink)
+        return Fn.UploadVideoRequest_Handler(request, Verified, User_Session, Description, VideoLink)
     else:
         return render(request, "Login.html")
 
@@ -27,7 +27,7 @@ def AddImage(request):
         sessionid = request.COOKIES['id']
         VideoLink=request.POST['ImageLink']
         Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.UploadImageRequest_Handler(request, Verified, User_Session, sessionid, VideoLink)
+        return Fn.UploadImageRequest_Handler(request, Verified, User_Session, VideoLink)
     else:
         return render(request,"Login.html")
 
@@ -36,7 +36,7 @@ def Get_AllImages(request):
     if 'id' in request.COOKIES:
         sessionid = request.COOKIES['id']
         Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.ImageRequest_Handler(request, Verified, User_Session, sessionid)
+        return Fn.ImageRequest_Handler(request, Verified, User_Session)
     else:
         return render(request, "Login.html")
 
@@ -44,7 +44,7 @@ def Get_AllVideos(request):
     if 'id' in request.COOKIES:
         sessionid = request.COOKIES['id']
         Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.VideoRequest_Handler(request,Verified,User_Session,sessionid)
+        return Fn.VideoRequest_Handler(request,Verified,User_Session)
     else:
         return render(request,"Login.html")
 
