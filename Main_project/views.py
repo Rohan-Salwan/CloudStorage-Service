@@ -13,24 +13,28 @@ def Home(request):
     return render(request, "Login.html")
 
 def AddVideo(request):
-    if 'id' in request.COOKIES:
-        sessionid = request.COOKIES['id']
-        Description=request.POST['description']
-        VideoLink=request.POST['VideoLink']
-        Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.UploadVideoRequest_Handler(request, Verified, User_Session, Description, VideoLink)
+    if request.method=="POST":
+        if 'id' in request.COOKIES:
+            sessionid = request.COOKIES['id']
+            VideoLink=request.FILES['FileName']
+            Verified, User_Session = Fn.Verify_Session(sessionid)
+            return Fn.UploadVideoRequest_Handler(request, Verified, User_Session,VideoLink)
+        else:
+            return render(request, "Login.html")
     else:
-        return render(request, "Login.html")
+        return render(request, "UploadVideo.html")
 
 def AddImage(request):
-    if 'id' in request.COOKIES:
-        sessionid = request.COOKIES['id']
-        VideoLink=request.POST['ImageLink']
-        Verified, User_Session = Fn.Verify_Session(sessionid)
-        return Fn.UploadImageRequest_Handler(request, Verified, User_Session, VideoLink)
+    if request.method=="POST":
+        if 'id' in request.COOKIES:
+            sessionid = request.COOKIES['id']
+            Image=request.FILES['Image']
+            Verified, User_Session = Fn.Verify_Session(sessionid)
+            return Fn.UploadImageRequest_Handler(request, Verified, User_Session, Image)
+        else:
+            return render(request,"Login.html")
     else:
-        return render(request,"Login.html")
-
+        return render(request, "UploadImages.html")
 
 def Get_AllImages(request):
     if 'id' in request.COOKIES:
@@ -54,11 +58,14 @@ def Login(request):
             Email=request.POST['Email']
             Password=request.POST['Password']
             return Fn.Connection_Establishment(Email,Password,request)
-        else:
+        sessionid = request.COOKIES['id']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.ProflieRequest_Handler(request, Verified, User_Session, sessionid)
+    else:
+        if "id" in request.COOKIES:
             sessionid = request.COOKIES['id']
             Verified, User_Session = Fn.Verify_Session(sessionid)
             return Fn.ProflieRequest_Handler(request, Verified, User_Session, sessionid)
-    else:
         return render(request, "Login.html")
 
 def Register(request):

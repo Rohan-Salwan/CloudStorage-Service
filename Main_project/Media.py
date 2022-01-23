@@ -35,6 +35,7 @@ class Db:
         self.conn.commit()
 
     def Query(self,email):
+        self.connect(self)
         try:
             UserQuery=(f"select * from media where email = '{email}'")
             self.pointer.execute(UserQuery)

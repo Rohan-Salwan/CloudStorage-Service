@@ -1,3 +1,4 @@
+from ast import Bytes
 from urllib import response
 from django.shortcuts import render
 from . import cache
@@ -7,36 +8,50 @@ import json
 import time
 from . import Media
 from datetime import datetime
+import os
+from io import StringIO
+import base64
 
 Server_Cache=cache.Cache()
 
 User_Info_fields = ['FirstName', 'LastName', 'Username', 'Email', 'Contact', 'DOB', 'Password']
 
-def UploadVideoRequest_Handler(request,Verified,User_Session,desc,Videolink):
+def UploadImageRequest_Handler(request,Verified,User_Session,Image):
     if Verified and User_Session:
         User_Email = User_Session['email']
         User_Dict=Server_Cache.get(User_Email)
-        User_Dict['User_Videos'][desc]=Videolink
-        User_DesirializedVideosDict = User_Dict['User_Videos']
+        ImageName=Image.name
+        data_uri = 'data:image/jpg;base64,'
+        data_uri+=base64.b64encode(Image.read()).decode('utf-8')
+        User_Dict['User_Images'][ImageName]=data_uri
+        User_DesirializedImagesDict = User_Dict['User_Images']
         Media.Db.connect(Media.Db)
-        Media.Db.Upload_Video(Media.Db,User_Email, User_DesirializedVideosDict)
+        Media.Db.Upload_Image(Media.Db,User_Email, User_DesirializedImagesDict)
         Server_Cache.get(User_Email,Update_Node=User_Dict)
-        return render(request, 'UplaodVideos.html', {'User_Videos': User_DesirializedVideosDict})
+        return render(request, 'Images.html', {'User_Images': User_DesirializedImagesDict})
     else:
         return render(request, "Login.html")
 
-def UploadImageRequest_Handler(request,Verified,User_Session,ImageLink):
+def Write(data):
+    name=data.name
+    os.chdir("/home/rohan/Video-SharingApp/media/pics")
+    with open(name, "wb") as bru:
+        bru.write(data)
+        bru.close()
+    return name
+
+def UploadVideoRequest_Handler(request,Verified,User_Session,ImageLink):
     if Verified and User_Session:
         User_Email = User_Session['email']
         User_Dict=Server_Cache.get(User_Email)
         ImageUploaded_Time=datetime.now()
         Uploaded_Time=ImageUploaded_Time.strftime("%H:%M:%S")
-        User_Dict['User_Images'][ImageLink]=Uploaded_Time
-        User_DesirializedImagesDict=User_Dict['User_Images']
+        User_Dict['User_Videos'][ImageLink]=Uploaded_Time
+        User_DesirializedVideosDict=User_Dict['User_Videos']
         Media.Db.connect(Media.Db)
-        Media.Db.Upload_Image(Media.Db, User_Email, User_DesirializedImagesDict)
+        Media.Db.Upload_Video(Media.Db, User_Email, User_DesirializedVideosDict)
         Server_Cache.get(User_Email,Update_Node=User_Dict)
-        return render(request, 'UploadImages.html', {'User_Images': User_DesirializedImagesDict})
+        return render(request, 'UploadImages.html', {'User_Videos': User_DesirializedVideosDict})
     else:
         return render(request, "Login.html")
 
@@ -135,16 +150,19 @@ def Verify_Session(SessionId):
         Valid_Session = SessionExpire_Checker(User_Session)
         return Valid_Session, User_Session
     else:
-        return False
+        return False, False
 
 def Get_DeserializedSession(SessionId):
     try:
         if SessionId not in Server_Cache.Map:
             session.Db.connect(session.Db)
             UserSessionInfo_List = session.Db.Query(session.Db,SessionId)
-            User_Session = UserSessionInfo_List[1]
-            Deserialized_UserSession = json.loads(User_Session)
-            Server_Cache.Put(SessionId,Deserialized_UserSession)
+            if UserSessionInfo_List:
+                User_Session = UserSessionInfo_List[1]
+                Deserialized_UserSession = json.loads(User_Session)
+                Server_Cache.Put(SessionId,Deserialized_UserSession)
+            else:
+                return False
         else:
             Deserialized_UserSession = Server_Cache.get(SessionId)
         return Deserialized_UserSession
@@ -163,3 +181,4 @@ def SessionExpire_Checker(User_Session):
 def delete_session(session_id):
     session.Db.connect(session.Db)
     session.Db.Delete_Session(session.Db,session_id)
+    Server_Cache.delete(session_id)

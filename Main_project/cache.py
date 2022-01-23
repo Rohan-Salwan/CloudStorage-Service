@@ -55,3 +55,15 @@ class Cache:
         if Update_Node is None:
             return self.tail.val
 
+    def delete(self,key):
+        node=self.Map[key]
+        if node.prev and node.next is None:
+            node.prev=None
+        elif node.prev is None and node.next is None:
+            node=None
+        elif node.prev is None and node.next:
+            node.next.prev=None
+        else:
+            node.prev.next=node.next
+            node.next.prev=node.prev
+        self.Map.pop(key,None)
