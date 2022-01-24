@@ -17,8 +17,8 @@ class Db:
     def InitializeUserTraceInMedia(self,email):
         self.connect(self)
         SerializedDict=json.dumps({})
-        User_Info=[email,SerializedDict,SerializedDict]
-        UserQuery=("INSERT INTO media(email, Videos, Images)VALUES (%s, %s, %s)")
+        User_Info=[email,SerializedDict,SerializedDict,SerializedDict]
+        UserQuery=("INSERT INTO media(email, Videos, Images, Files)VALUES (%s, %s, %s, %s)")
         self.pointer.execute(UserQuery,User_Info)
         self.conn.commit()
         
@@ -32,6 +32,12 @@ class Db:
         SerializedDict=json.dumps(ImagesDict)
         UploadQueryForImages = (f"update media set Images = '{SerializedDict}' where email = '{email}'")
         self.pointer.execute(UploadQueryForImages)
+        self.conn.commit()
+
+    def Upload_File(self, email, FilesDict):
+        SerializedDict=json.dumps(FilesDict)
+        UploadQueryForFiles = (f"update media set Files = '{SerializedDict}' where email = '{email}'")
+        self.pointer.execute(UploadQueryForFiles)
         self.conn.commit()
 
     def Query(self,email):

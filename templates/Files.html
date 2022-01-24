@@ -13,10 +13,9 @@
           <!-- Breadcrumb -->
           <nav aria-label="breadcrumb" class="main-breadcrumb">
             <ul class="breadcrumb">
+              <li class="breadcrumb-item active"><a href="Login">Profile</a></li>
               <li class="breadcrumb-item"><a href="Home">Home</a></li>
-              <li class="breadcrumb-item"><a href="Images">Images</a></li>
-              <li class="breadcrumb-item active"><a href="Videos">Videos</a></li>
-              <li class="breadcrumb-item active"><a href="Files">Files</a></li>
+              <li class="breadcrumb-item active"><a href="UploadFile">Upload File</a></li>
               <li class="breadcrumb-item active"><a href="Logout">Logout</a></li>
             </ul>
           </nav>
@@ -41,18 +40,19 @@
             <div class="col-md-8">
               <div class="card mb-3">
                 <div class="card-body">
-                  {% for user1, user2 in User_Details %}
+                  {% for user1, user2 in User_Files.items %}
                   <div class="row">
-                    {% if forloop.counter < 7 %}
                     <div class="col-sm-3">
                       <h6 class="mb-0">{{user1}}</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                      {{user2}}
+                    <a href="{{user2}}" download="Download-File">
+                      <input type="button" value="Download"/>
+                    </a>
+                    <div class="col-sm-9 text-secondary" align="center" style="background-color:black;width:100%;height:1000px"%>
+                      <embed src="{{user2}}" style="width:90%;height:100%"></embed>
                     </div>
                   </div>
                   <hr>
-                  {% endif %}
                   {% endfor %}
                   <div class="row">
                     <div class="col-sm-12">

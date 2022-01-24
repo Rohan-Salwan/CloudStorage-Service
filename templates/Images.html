@@ -16,7 +16,6 @@
               <li class="breadcrumb-item active"><a href="Login">Profile</a></li>
               <li class="breadcrumb-item"><a href="Home">Home</a></li>
               <li class="breadcrumb-item"><a href="UploadImages">Upload Images</a></li>
-              <li class="breadcrumb-item active"><a href="UploadVideo">Upload Videos</a></li>
               <li class="breadcrumb-item active"><a href="Logout">Logout</a></li>
             </ul>
           </nav>
@@ -46,8 +45,11 @@
                     <div class="col-sm-3">
                       <h6 class="mb-0">{{user1}}</h6>
                     </div>
+                    <a href="{{user2}}" download="Download-File">
+                      <input type="button" value="Download"/>
+                    </a>
                     <div class="col-sm-9 text-secondary">
-                      <img src="{{user2}}"/> 
+                      <img src="{{user2}}" width="1000" height="600"/>
                     </div>
                   </div>
                   <hr>

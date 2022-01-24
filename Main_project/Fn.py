@@ -1,5 +1,3 @@
-from ast import Bytes
-from urllib import response
 from django.shortcuts import render
 from . import cache
 from . import User
@@ -8,37 +6,44 @@ import json
 import time
 from . import Media
 from datetime import datetime
-import os
-from io import StringIO
 import base64
 
 Server_Cache=cache.Cache()
 
 User_Info_fields = ['FirstName', 'LastName', 'Username', 'Email', 'Contact', 'DOB', 'Password']
 
-def UploadImageRequest_Handler(request,Verified,User_Session,Image):
+def UploadFileRequest_Handler(request,Verified,User_Session,File):
     if Verified and User_Session:
         User_Email = User_Session['email']
         User_Dict=Server_Cache.get(User_Email)
-        ImageName=Image.name
-        data_uri = 'data:image/jpg;base64,'
-        data_uri+=base64.b64encode(Image.read()).decode('utf-8')
-        User_Dict['User_Images'][ImageName]=data_uri
-        User_DesirializedImagesDict = User_Dict['User_Images']
+        FileName=File.name
+        data_uri = 'data:application/pdf;base64,'
+        data_uri+=base64.b64encode(File.read()).decode('utf-8')
+        User_Dict['User_Files'][FileName]=data_uri
+        User_DesirializedFilesDict = User_Dict['User_Files']
         Media.Db.connect(Media.Db)
-        Media.Db.Upload_Image(Media.Db,User_Email, User_DesirializedImagesDict)
+        Media.Db.Upload_File(Media.Db,User_Email, User_DesirializedFilesDict)
         Server_Cache.get(User_Email,Update_Node=User_Dict)
-        return render(request, 'Images.html', {'User_Images': User_DesirializedImagesDict})
+        return render(request, 'Files.html', {'User_Files': User_DesirializedFilesDict})
     else:
         return render(request, "Login.html")
 
-def Write(data):
-    name=data.name
-    os.chdir("/home/rohan/Video-SharingApp/media/pics")
-    with open(name, "wb") as bru:
-        bru.write(data)
-        bru.close()
-    return name
+def FileRequest_Handler(request, Verified, User_Session):
+    if Verified and User_Session:
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        if 'User_Files' in User_Dict:
+            User_DeserializedFilesDict=User_Dict['User_Files']
+            return render(request, 'Files.html', {'User_Files': User_DeserializedFilesDict})
+        else:
+            User_QueryResult=Media.Db.Query(Media.Db,User_Email)
+            User_SerializedFilesDict=User_QueryResult[3]
+            User_DeserializedFilesDict=json.loads(User_SerializedFilesDict)
+            User_Dict['User_Files']=User_DeserializedFilesDict
+            Server_Cache.get(User_Email,Update_Node=User_Dict)
+            return render(request,'Files.html', {'User_Files': User_DeserializedFilesDict})
+    else:
+        return render(request, 'Login.html')
 
 def UploadVideoRequest_Handler(request,Verified,User_Session,ImageLink):
     if Verified and User_Session:
@@ -71,6 +76,22 @@ def VideoRequest_Handler(request,Verified,User_Session):
             return render(request,'Videos.html', {'User_Videos': User_DesirializedVideosDict})
     else:
         return render(request, 'Login.html')
+
+def UploadImageRequest_Handler(request,Verified,User_Session,Image):
+    if Verified and User_Session:
+        User_Email = User_Session['email']
+        User_Dict=Server_Cache.get(User_Email)
+        ImageName=Image.name
+        data_uri = 'data:image/jpg;base64,'
+        data_uri+=base64.b64encode(Image.read()).decode('utf-8')
+        User_Dict['User_Images'][ImageName]=data_uri
+        User_DesirializedImagesDict = User_Dict['User_Images']
+        Media.Db.connect(Media.Db)
+        Media.Db.Upload_Image(Media.Db,User_Email, User_DesirializedImagesDict)
+        Server_Cache.get(User_Email,Update_Node=User_Dict)
+        return render(request, 'Images.html', {'User_Images': User_DesirializedImagesDict})
+    else:
+        return render(request, "Login.html")
 
 def ImageRequest_Handler(request, Verified, User_Session):
     if Verified and User_Session:

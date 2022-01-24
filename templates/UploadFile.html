@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+    <div class="container">
+      <div class="content">
+        <form action="UploadFile" method="POST" enctype = 'multipart/form-data'>
+          {% csrf_token %}
+          <div class="user-details">
+            <div class="input-box">
+              <input type="file" name="File"required>
+            </div>
+          </div>
+          <div class="button">
+            <input type="submit" value="Register">
+          </div>
+        </form>
+      </div>
+    </div>
+</body>
+</html>    

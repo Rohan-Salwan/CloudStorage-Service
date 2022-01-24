@@ -12,7 +12,27 @@ def Home(request):
             return render(request,"Home.html")
     return render(request, "Login.html")
 
-def AddVideo(request):
+def UploadFiles(request):
+    if request.method=="POST":
+        if 'id' in request.COOKIES:
+            sessionid = request.COOKIES['id']
+            Files=request.FILES['File']
+            Verified, User_Session = Fn.Verify_Session(sessionid)
+            return Fn.UploadFileRequest_Handler(request, Verified, User_Session, Files)
+        else:
+            return render(request,"Login.html")
+    else:
+        return render(request, "UploadFile.html")
+
+def Get_AllFiles(request):
+    if 'id' in request.COOKIES:
+        sessionid = request.COOKIES['id']
+        Verified, User_Session = Fn.Verify_Session(sessionid)
+        return Fn.FileRequest_Handler(request, Verified, User_Session)
+    else:
+        return render(request, "Login.html")
+
+def UploadVideo(request):
     if request.method=="POST":
         if 'id' in request.COOKIES:
             sessionid = request.COOKIES['id']
@@ -24,7 +44,7 @@ def AddVideo(request):
     else:
         return render(request, "UploadVideo.html")
 
-def AddImage(request):
+def UploadImage(request):
     if request.method=="POST":
         if 'id' in request.COOKIES:
             sessionid = request.COOKIES['id']
