@@ -2,7 +2,7 @@ body {
     margin-top: 20px;
     color: #1a202c;
     text-align: left;
-    background-color: #9cf;
+    background-color: #808080;
 }
 
 .main-body {
@@ -19,7 +19,7 @@ body {
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
-    background-color: #fff;
+    background-color: #D3D3D3;
     background-clip: border-box;
     border: 0 solid rgba(0, 0, 0, .125);
     border-radius: .25rem;
@@ -61,7 +61,7 @@ body {
 
 .breadcrumb li {
     display: inline;
-    font-family: Arial;
+    font-family: Arial, Helvetica, sans-serif;
     padding-right: 10px;
 }
 
